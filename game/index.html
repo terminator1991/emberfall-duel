@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emberfall Duel — a card duel of resonance and counters</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: "Avenir Next", "Segoe UI", Verdana, sans-serif;
+    background:
+      radial-gradient(1200px 700px at 50% 30%, #2c5d46 0%, #1d4433 55%, #122b20 100%);
+    color: #f5efe0;
+    overflow: hidden;
+    user-select: none;
+  }
+  #table { position: fixed; inset: 0; display: flex; flex-direction: column; padding: 14px 26px 18px; }
+
+  /* ---------- top strip ---------- */
+  #topbar { display: flex; align-items: center; justify-content: space-between; }
+  #brand { font-size: 21px; letter-spacing: 3px; font-weight: 700; color: #ffd98a; text-shadow: 0 2px 0 #00000055; }
+  #brand small { display: block; font-size: 11px; letter-spacing: 2px; color: #cfe3d2; font-weight: 400; }
+  #deckbox { text-align: center; font-size: 13px; color: #cfe3d2; }
+  #deckbox b { display: block; font-size: 26px; color: #fff; }
+  #clashno { font-size: 15px; letter-spacing: 2px; color: #ffd98a; }
+
+  /* ---------- duelist zones ---------- */
+  .zone { display: flex; align-items: center; gap: 22px; }
+  .plate { width: 168px; text-align: center; flex: none; }
+  .plate .who { font-size: 14px; letter-spacing: 2px; color: #cfe3d2; }
+  .plate .life {
+    margin: 6px auto 4px; width: 86px; height: 86px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff8a70, #c22e1c 70%);
+    border: 4px solid #ffd98a; display: flex; align-items: center; justify-content: center;
+    font-size: 38px; font-weight: 800; color: #fff; text-shadow: 0 2px 3px #00000066;
+  }
+  .plate.warden .life { background: radial-gradient(circle at 35% 30%, #9db4d8, #33507e 70%); }
+  .plate .lifebar { height: 10px; border-radius: 5px; background: #00000055; overflow: hidden; }
+  .plate .lifebar i { display: block; height: 100%; background: linear-gradient(90deg, #ffb03a, #ff7847); }
+  .plate.warden .lifebar i { background: linear-gradient(90deg, #7fb0ff, #4a7fd4); }
+  .plate .lastsuit { margin-top: 5px; font-size: 12px; color: #ffe9b0; min-height: 15px; }
+  .hand { display: flex; gap: 10px; align-items: flex-start; min-height: 118px; }
+  .zone.wardenzone { flex-direction: row; }
+  .zone.youzone { margin-top: auto; }
+  .zone.youzone .hand { min-height: 148px; }
+
+  /* ---------- cards ---------- */
+  .card {
+    width: 78px; height: 112px; border-radius: 10px; background: #fdf8ec; color: #222;
+    border: 3px solid #444; position: relative; flex: none;
+    box-shadow: 0 4px 8px #00000066; padding: 5px 6px;
+  }
+  .card .rank { font-size: 26px; font-weight: 800; line-height: 1; }
+  .card .glyph { font-size: 30px; text-align: center; margin-top: 6px; }
+  .card .suitname { position: absolute; bottom: 5px; left: 0; right: 0; text-align: center; font-size: 11px; letter-spacing: 1px; color: #555; }
+  .card.ember { border-color: #e2492f; } .card.ember .rank, .card.ember .glyph { color: #e2492f; }
+  .card.grove { border-color: #2e9e5b; } .card.grove .rank, .card.grove .glyph { color: #2e9e5b; }
+  .card.stone { border-color: #8a6d3b; } .card.stone .rank, .card.stone .glyph { color: #8a6d3b; }
+  .card.tide  { border-color: #2f6fd0; } .card.tide .rank, .card.tide .glyph { color: #2f6fd0; }
+  .card.wild { border-color: #7a3fd1; background: linear-gradient(160deg, #f3eaff, #fdf8ec); }
+  .card.wild .rank, .card.wild .glyph { color: #7a3fd1; }
+  .card.wild .suitname { color: #7a3fd1; }
+  .youzone .card { width: 96px; height: 140px; cursor: pointer; transition: transform .12s ease; }
+  .youzone .card .rank { font-size: 32px; } .youzone .card .glyph { font-size: 38px; margin-top: 10px; }
+  .youzone .card:hover { transform: translateY(-14px); }
+  .youzone .card.picked { transform: translateY(-14px); outline: 4px solid #ffd98a; }
+  .card.slot { width: 110px; height: 156px; }
+  .card.slot .rank { font-size: 38px; } .card.slot .glyph { font-size: 46px; margin-top: 14px; }
+  .slotempty {
+    width: 110px; height: 156px; border-radius: 10px; border: 3px dashed #ffffff44;
+    display: flex; align-items: center; justify-content: center; color: #ffffff88; font-size: 13px; text-align: center; padding: 8px;
+  }
+
+  /* ---------- arena ---------- */
+  #arena { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+  #clashrow { display: flex; align-items: center; gap: 26px; }
+  #vs { font-size: 30px; font-weight: 800; color: #ffd98a; text-shadow: 0 2px 0 #00000055; }
+  #banner {
+    min-height: 58px; max-width: 1060px; text-align: center; font-size: 19px; line-height: 1.45;
+    background: #00000038; border: 1px solid #ffd98a55; border-radius: 12px; padding: 9px 22px;
+  }
+  #banner b { color: #ffd98a; }
+  #banner:empty { background: none; border-color: transparent; }
+  #hint { font-size: 13px; color: #cfe3d2; letter-spacing: 1px; }
+
+  /* ---------- overlays ---------- */
+  .overlay {
+    position: fixed; inset: 0; background: #0d1f16cc; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; gap: 14px; z-index: 5;
+  }
+  .overlay h1 { font-size: 64px; margin: 0; letter-spacing: 4px; color: #ffd98a; text-shadow: 0 4px 0 #00000066; }
+  .overlay h2 { font-size: 22px; margin: 0; font-weight: 400; color: #ffe9b0; letter-spacing: 2px; }
+  .overlay p { max-width: 640px; font-size: 16px; line-height: 1.6; color: #e8e2cd; margin: 0; }
+  .overlay .big { font-size: 30px; color: #fff; }
+  button {
+    font: inherit; font-size: 19px; font-weight: 700; letter-spacing: 1px; cursor: pointer;
+    background: linear-gradient(180deg, #ffb03a, #e07b24); color: #2b1503; border: none;
+    border-radius: 10px; padding: 13px 38px; box-shadow: 0 5px 0 #9a4d12, 0 8px 14px #00000077;
+  }
+  button:hover { filter: brightness(1.07); }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="table">
+  <div id="topbar">
+    <div id="brand">EMBERFALL DUEL<small>A CARD DUEL OF RESONANCE &amp; COUNTERS</small></div>
+    <div id="deckbox">DECK<b id="deckcount">44</b></div>
+    <div id="clashno">CLASH 0</div>
+  </div>
+
+  <div class="zone wardenzone">
+    <div class="plate warden">
+      <div class="who">THE WARDEN · AI</div>
+      <div class="life" id="wardenlife">20</div>
+      <div class="lifebar"><i id="wardenbar" style="width:100%"></i></div>
+      <div class="lastsuit" id="wardenlast"></div>
+    </div>
+    <div class="hand" id="wardenhand"></div>
+  </div>
+
+  <div id="arena">
+    <div id="clashrow">
+      <div id="yourslot"></div>
+      <div id="vs">VS</div>
+      <div id="wardenslot"></div>
+    </div>
+    <div id="banner"></div>
+    <div id="hint">Click one of your cards to clash · keys 1–5 pick a card · Enter continues</div>
+  </div>
+
+  <div class="zone youzone">
+    <div class="plate">
+      <div class="who">YOU · THE CHALLENGER</div>
+      <div class="life" id="youlife">20</div>
+      <div class="lifebar"><i id="youbar" style="width:100%"></i></div>
+      <div class="lastsuit" id="youlast"></div>
+    </div>
+    <div class="hand" id="youhand"></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="titlecard">
+  <h1>EMBERFALL DUEL</h1>
+  <h2>A CARD DUEL OF RESONANCE &amp; COUNTERS</h2>
+  <p>Two duelists, one 44-card deck, 20 Life each. Every clash, both play a card:
+     it strikes for its rank, <b>+2</b> if its suit echoes your last suit (Resonance),
+     <b>+3</b> if its suit counters the foe's card — Ember burns Grove, Grove cracks Stone,
+     Stone dams Tide, Tide douses Ember. The higher strike wounds for the difference.
+     Wild Sigils strike a flat 6 and cannot be countered. When the deck runs dry, hunger bites.</p>
+  <button id="startbtn">START THE DUEL</button>
+</div>
+
+<div class="overlay hidden" id="endcard">
+  <h1 id="endtitle">VICTORY</h1>
+  <p class="big" id="endscore"></p>
+  <p id="endline"></p>
+  <button id="againbtn">DUEL AGAIN</button>
+</div>
+
+<p id="status" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)"></p>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
