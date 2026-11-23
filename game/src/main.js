@@ -89,6 +89,8 @@ function render() {
 function showEnd() {
   const title = duel.winner === 'you' ? 'VICTORY' : duel.winner === 'warden' ? 'DEFEAT' : 'ASHEN DRAW';
   $('endtitle').textContent = title;
+  $('endcard').classList.toggle('won', duel.winner === 'you');
+  $('endcard').classList.toggle('lost', duel.winner === 'warden');
   $('endscore').textContent = `You ${Math.max(0, duel.you.life)} Life — Warden ${Math.max(0, duel.warden.life)} Life · ${duel.clash} clashes`;
   $('endline').textContent =
     duel.winner === 'you'
@@ -126,6 +128,37 @@ function simulate(seed, pick) {
   return state;
 }
 
+/**
+ * Screenshot staging for the in-play frame: search seeds from `seed`
+ * upward for a genuine mid-game position — reached by playing the real
+ * rules forward with the autopilots — whose last clash shows the hero's
+ * card triggering Resonance and Counter together while the hero leads
+ * clearly. Falls back to the classic five-clash frame if none qualifies.
+ */
+function stagePlayDuel(seed) {
+  for (let s = seed; s < seed + 400; s += 1) {
+    const state = newDuel(s);
+    let result = null;
+    for (let i = 0; i < 14 && state.phase !== 'over'; i += 1) {
+      result = playClash(state, heroPick(state), wardenPick(state, state.rng));
+      const rich = state.phase === 'play'
+        && state.clash >= 7
+        && result.yours.resonance > 0
+        && result.yours.counter > 0
+        && result.dealt >= 3
+        && state.you.life - state.warden.life >= 5
+        && state.warden.life >= 4;
+      if (rich) return state;
+      if (state.clash >= 7 && state.warden.life <= 3) break; // hero too dominant; try the next seed
+    }
+  }
+  const state = newDuel(seed);
+  for (let i = 0; i < 5 && state.phase !== 'over'; i += 1) {
+    playClash(state, heroPick(state), wardenPick(state, state.rng));
+  }
+  return state;
+}
+
 function stage() {
   const params = new URLSearchParams(location.search);
   const shot = params.get('shot');
@@ -141,11 +174,8 @@ function stage() {
     return;
   }
   if (shot === 'play') {
-    duel = newDuel(seed);
-    lastResult = null;
-    for (let i = 0; i < 5 && duel.phase !== 'over'; i += 1) {
-      lastResult = playClash(duel, heroPick(duel), wardenPick(duel, duel.rng));
-    }
+    duel = stagePlayDuel(seed);
+    lastResult = duel.log[duel.log.length - 1] ?? null;
     render();
     return;
   }

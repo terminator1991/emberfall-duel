@@ -10,7 +10,8 @@
   body {
     font-family: "Avenir Next", "Segoe UI", Verdana, sans-serif;
     background:
-      radial-gradient(1200px 700px at 50% 30%, #2c5d46 0%, #1d4433 55%, #122b20 100%);
+      radial-gradient(760px 460px at 50% 52%, #b3541e38 0%, #b3541e00 70%),
+      radial-gradient(1200px 700px at 50% 30%, #2f6a4e 0%, #1d4433 55%, #0c2117 100%);
     color: #f5efe0;
     overflow: hidden;
     user-select: none;
@@ -19,27 +20,28 @@
 
   /* ---------- top strip ---------- */
   #topbar { display: flex; align-items: center; justify-content: space-between; }
-  #brand { font-size: 21px; letter-spacing: 3px; font-weight: 700; color: #ffd98a; text-shadow: 0 2px 0 #00000055; }
+  #brand { font-size: 24px; letter-spacing: 3px; font-weight: 700; color: #ffd98a; text-shadow: 0 2px 0 #00000055, 0 0 14px #ffb03a3d; }
   #brand small { display: block; font-size: 11px; letter-spacing: 2px; color: #cfe3d2; font-weight: 400; }
   #deckbox { text-align: center; font-size: 13px; color: #cfe3d2; }
-  #deckbox b { display: block; font-size: 26px; color: #fff; }
-  #clashno { font-size: 15px; letter-spacing: 2px; color: #ffd98a; }
+  #deckbox b { display: block; font-size: 30px; color: #fff; }
+  #clashno { font-size: 17px; font-weight: 700; letter-spacing: 2px; color: #ffd98a; }
 
   /* ---------- duelist zones ---------- */
   .zone { display: flex; align-items: center; gap: 22px; }
   .plate { width: 168px; text-align: center; flex: none; }
-  .plate .who { font-size: 14px; letter-spacing: 2px; color: #cfe3d2; }
+  .plate .who { font-size: 15px; font-weight: 700; letter-spacing: 2px; color: #e6f2e7; }
   .plate .life {
-    margin: 6px auto 4px; width: 86px; height: 86px; border-radius: 50%;
+    margin: 6px auto 4px; width: 94px; height: 94px; border-radius: 50%;
     background: radial-gradient(circle at 35% 30%, #ff8a70, #c22e1c 70%);
     border: 4px solid #ffd98a; display: flex; align-items: center; justify-content: center;
-    font-size: 38px; font-weight: 800; color: #fff; text-shadow: 0 2px 3px #00000066;
+    font-size: 44px; font-weight: 800; color: #fff; text-shadow: 0 2px 3px #00000066;
+    box-shadow: 0 0 24px #ff784766, 0 4px 10px #00000066;
   }
-  .plate.warden .life { background: radial-gradient(circle at 35% 30%, #9db4d8, #33507e 70%); }
-  .plate .lifebar { height: 10px; border-radius: 5px; background: #00000055; overflow: hidden; }
+  .plate.warden .life { background: radial-gradient(circle at 35% 30%, #9db4d8, #33507e 70%); box-shadow: 0 0 24px #4a7fd466, 0 4px 10px #00000066; }
+  .plate .lifebar { height: 14px; border-radius: 7px; background: #00000055; overflow: hidden; border: 1px solid #ffd98a44; }
   .plate .lifebar i { display: block; height: 100%; background: linear-gradient(90deg, #ffb03a, #ff7847); }
   .plate.warden .lifebar i { background: linear-gradient(90deg, #7fb0ff, #4a7fd4); }
-  .plate .lastsuit { margin-top: 5px; font-size: 12px; color: #ffe9b0; min-height: 15px; }
+  .plate .lastsuit { margin-top: 5px; font-size: 13px; color: #ffe9b0; min-height: 16px; }
   .hand { display: flex; gap: 10px; align-items: flex-start; min-height: 118px; }
   .zone.wardenzone { flex-direction: row; }
   .zone.youzone { margin-top: auto; }
@@ -65,8 +67,8 @@
   .youzone .card .rank { font-size: 32px; } .youzone .card .glyph { font-size: 38px; margin-top: 10px; }
   .youzone .card:hover { transform: translateY(-14px); }
   .youzone .card.picked { transform: translateY(-14px); outline: 4px solid #ffd98a; }
-  .card.slot { width: 110px; height: 156px; }
-  .card.slot .rank { font-size: 38px; } .card.slot .glyph { font-size: 46px; margin-top: 14px; }
+  .card.slot { width: 110px; height: 156px; box-shadow: 0 10px 26px #00000088, 0 0 20px #ffd98a30; }
+  .card.slot .rank { font-size: 42px; } .card.slot .glyph { font-size: 52px; margin-top: 14px; }
   .slotempty {
     width: 110px; height: 156px; border-radius: 10px; border: 3px dashed #ffffff44;
     display: flex; align-items: center; justify-content: center; color: #ffffff88; font-size: 13px; text-align: center; padding: 8px;
@@ -75,28 +77,40 @@
   /* ---------- arena ---------- */
   #arena { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
   #clashrow { display: flex; align-items: center; gap: 26px; }
-  #vs { font-size: 30px; font-weight: 800; color: #ffd98a; text-shadow: 0 2px 0 #00000055; }
-  #banner {
-    min-height: 58px; max-width: 1060px; text-align: center; font-size: 19px; line-height: 1.45;
-    background: #00000038; border: 1px solid #ffd98a55; border-radius: 12px; padding: 9px 22px;
+  #vs {
+    width: 76px; height: 76px; flex: none; display: flex; align-items: center; justify-content: center;
+    font-size: 36px; font-weight: 800; color: #fff; border-radius: 50%;
+    background: radial-gradient(circle at 40% 32%, #ffb03a, #c2541a 78%);
+    border: 3px solid #ffd98a; text-shadow: 0 2px 3px #00000066;
+    box-shadow: 0 6px 16px #00000077, 0 0 22px #ff784755;
   }
-  #banner b { color: #ffd98a; }
-  #banner:empty { background: none; border-color: transparent; }
-  #hint { font-size: 13px; color: #cfe3d2; letter-spacing: 1px; }
+  #banner {
+    min-height: 58px; max-width: 1060px; text-align: center; font-size: 21px; line-height: 1.45;
+    background: #00000059; border: 1px solid #ffd98a88; border-radius: 12px; padding: 10px 24px;
+    box-shadow: 0 4px 14px #00000044;
+  }
+  #banner b { color: #ffd98a; text-shadow: 0 1px 2px #00000088; }
+  #banner:empty { background: none; border-color: transparent; box-shadow: none; }
+  #hint { font-size: 14px; color: #cfe3d2; letter-spacing: 1px; }
 
   /* ---------- overlays ---------- */
   .overlay {
-    position: fixed; inset: 0; background: #0d1f16cc; display: flex; flex-direction: column;
+    position: fixed; inset: 0; display: flex; flex-direction: column;
     align-items: center; justify-content: center; text-align: center; gap: 14px; z-index: 5;
+    background:
+      radial-gradient(820px 500px at 50% 42%, #b3541e30 0%, #b3541e00 70%),
+      radial-gradient(1200px 800px at 50% 40%, #143527f2 0%, #0a1a11f5 100%);
   }
-  .overlay h1 { font-size: 64px; margin: 0; letter-spacing: 4px; color: #ffd98a; text-shadow: 0 4px 0 #00000066; }
-  .overlay h2 { font-size: 22px; margin: 0; font-weight: 400; color: #ffe9b0; letter-spacing: 2px; }
-  .overlay p { max-width: 640px; font-size: 16px; line-height: 1.6; color: #e8e2cd; margin: 0; }
-  .overlay .big { font-size: 30px; color: #fff; }
+  .overlay h1 { font-size: 88px; margin: 0; letter-spacing: 6px; color: #ffd98a; text-shadow: 0 0 26px #ff784780, 0 0 64px #e2492f4d, 0 4px 0 #00000066; }
+  #endcard.won h1 { color: #ffe9a8; text-shadow: 0 0 26px #ffb03a85, 0 0 64px #e07b2452, 0 4px 0 #00000066; }
+  #endcard.lost h1 { color: #ff9a86; text-shadow: 0 0 26px #e2492f85, 0 0 64px #e2492f52, 0 4px 0 #00000066; }
+  .overlay h2 { font-size: 26px; margin: 0; font-weight: 400; color: #ffe9b0; letter-spacing: 2px; }
+  .overlay p { max-width: 700px; font-size: 17px; line-height: 1.6; color: #e8e2cd; margin: 0; }
+  .overlay .big { font-size: 36px; font-weight: 700; color: #fff; }
   button {
-    font: inherit; font-size: 19px; font-weight: 700; letter-spacing: 1px; cursor: pointer;
+    font: inherit; font-size: 20px; font-weight: 700; letter-spacing: 1px; cursor: pointer;
     background: linear-gradient(180deg, #ffb03a, #e07b24); color: #2b1503; border: none;
-    border-radius: 10px; padding: 13px 38px; box-shadow: 0 5px 0 #9a4d12, 0 8px 14px #00000077;
+    border-radius: 10px; padding: 15px 44px; box-shadow: 0 5px 0 #9a4d12, 0 8px 14px #00000077;
   }
   button:hover { filter: brightness(1.07); }
   .hidden { display: none !important; }
